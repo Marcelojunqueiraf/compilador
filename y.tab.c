@@ -602,9 +602,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   102,   102,    99,   109,   110,   113,   114,   117,   118,
-     120,   121,   124,   127,   132,   129,   143,   160,   161,   162,
-     163,   164,   165,   166,   167,   168,   169,   170
+       0,   101,   101,    99,   104,   105,   106,   107,   109,   110,
+     112,   113,   114,   115,   118,   116,   128,   144,   145,   146,
+     147,   148,   149,   150,   151,   152,   153,   154
 };
 #endif
 
@@ -1440,130 +1440,122 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 102 "Simple.y"
-{ gen_code( DATA, data_location() - 1 );
-}
-#line 1447 "y.tab.c"
+#line 101 "Simple.y"
+   { gen_code( DATA, data_location() - 1 ); }
+#line 1446 "y.tab.c"
     break;
 
   case 3:
-#line 106 "Simple.y"
-{ gen_code( HALT, 0 ); YYACCEPT;
-}
-#line 1454 "y.tab.c"
+#line 103 "Simple.y"
+    { gen_code( HALT, 0 ); YYACCEPT; }
+#line 1452 "y.tab.c"
     break;
 
   case 5:
-#line 110 "Simple.y"
-                                { install( (yyvsp[-1].id) );
-}
-#line 1461 "y.tab.c"
+#line 105 "Simple.y"
+                                  { install( (yyvsp[-1].id) ); }
+#line 1458 "y.tab.c"
     break;
 
   case 7:
-#line 114 "Simple.y"
-                        { install( (yyvsp[-1].id) );
-}
-#line 1468 "y.tab.c"
+#line 107 "Simple.y"
+                          { install( (yyvsp[-1].id) );}
+#line 1464 "y.tab.c"
     break;
 
   case 11:
-#line 122 "Simple.y"
-{ context_check( READ_INT, (yyvsp[0].id) );
-}
-#line 1475 "y.tab.c"
+#line 113 "Simple.y"
+                    { context_check( READ_INT, (yyvsp[0].id) ); }
+#line 1470 "y.tab.c"
     break;
 
   case 12:
-#line 125 "Simple.y"
-{ gen_code( WRITE_INT, 0 );
-}
-#line 1482 "y.tab.c"
+#line 114 "Simple.y"
+              { gen_code( WRITE_INT, 0 ); }
+#line 1476 "y.tab.c"
     break;
 
   case 13:
-#line 127 "Simple.y"
-                         { context_check( STORE, (yyvsp[-2].id) );
-}
-#line 1489 "y.tab.c"
+#line 115 "Simple.y"
+                           { context_check( STORE, (yyvsp[-2].id) ); }
+#line 1482 "y.tab.c"
     break;
 
   case 14:
-#line 132 "Simple.y"
-{ (yyvsp[-4].lbls) = (struct lbs *) newlblrec();
-(yyvsp[-4].lbls)->for_jmp_false = reserve_loc();
-{ (yyvsp[-4].lbls)->for_goto = reserve_loc();
-{ back_patch( (yyvsp[-4].lbls)->for_jmp_false,
-JMP_FALSE,
-gen_label() );
-}
-}
-}
-#line 1503 "y.tab.c"
+#line 118 "Simple.y"
+         { (yyvsp[-4].lbls) = (struct lbs *) newlblrec(); (yyvsp[-4].lbls)->for_jmp_false = reserve_loc();
+      {
+        (yyvsp[-4].lbls)->for_goto = reserve_loc();
+        {
+          back_patch( (yyvsp[-4].lbls)->for_jmp_false, JMP_FALSE, gen_label() );
+        }
+      }
+    }
+#line 1495 "y.tab.c"
     break;
 
   case 17:
-#line 160 "Simple.y"
-           { gen_code( LD_INT, (yyvsp[0].intval) ); }
-#line 1509 "y.tab.c"
+#line 144 "Simple.y"
+             { gen_code( LD_INT, (yyvsp[0].intval) ); }
+#line 1501 "y.tab.c"
     break;
 
   case 18:
-#line 161 "Simple.y"
+#line 145 "Simple.y"
                { context_check( LD_VAR, (yyvsp[0].id) ); }
-#line 1515 "y.tab.c"
+#line 1507 "y.tab.c"
     break;
 
   case 19:
-#line 162 "Simple.y"
+#line 146 "Simple.y"
                 { gen_code( LT, 0 ); }
-#line 1521 "y.tab.c"
+#line 1513 "y.tab.c"
     break;
 
   case 20:
-#line 163 "Simple.y"
+#line 147 "Simple.y"
                 { gen_code( EQ, 0 ); }
-#line 1527 "y.tab.c"
+#line 1519 "y.tab.c"
     break;
 
   case 21:
-#line 164 "Simple.y"
+#line 148 "Simple.y"
                 { gen_code( GT, 0 ); }
-#line 1533 "y.tab.c"
+#line 1525 "y.tab.c"
     break;
 
   case 22:
-#line 165 "Simple.y"
+#line 149 "Simple.y"
                 { gen_code( ADD, 0 ); }
-#line 1539 "y.tab.c"
+#line 1531 "y.tab.c"
     break;
 
   case 23:
-#line 166 "Simple.y"
+#line 150 "Simple.y"
                 { gen_code( SUB, 0 ); }
-#line 1545 "y.tab.c"
+#line 1537 "y.tab.c"
     break;
 
   case 24:
-#line 167 "Simple.y"
+#line 151 "Simple.y"
                 { gen_code( MULT, 0 ); }
-#line 1551 "y.tab.c"
+#line 1543 "y.tab.c"
     break;
 
   case 25:
-#line 168 "Simple.y"
+#line 152 "Simple.y"
                 { gen_code( DIV, 0 ); }
-#line 1557 "y.tab.c"
+#line 1549 "y.tab.c"
     break;
 
   case 26:
-#line 169 "Simple.y"
+#line 153 "Simple.y"
                 { gen_code( PWR, 0 ); }
-#line 1563 "y.tab.c"
+#line 1555 "y.tab.c"
     break;
 
 
-#line 1567 "y.tab.c"
+#line 1559 "y.tab.c"
 
       default: break;
     }
@@ -1795,7 +1787,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 171 "Simple.y"
+#line 156 "Simple.y"
 
 
 main( int argc, char *argv[] )
