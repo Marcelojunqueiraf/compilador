@@ -46,7 +46,7 @@ context_check( enum code_ops operation, char *sym_name )
     printf( "%s", sym_name );
     printf( "%s\n", " is an undeclared identifier" );
   }
-  else gen_code( operation, identifier->offset );
+  else gen_code( operation, identifier->offset ,0,0);
 }
 /*=========================================================================
 SEMANTIC RECORDS
@@ -73,16 +73,13 @@ TOKENS
 =========================================================================*/
 %start program
 %token <intval> NUMBER
-/* Simple integer
-*/
+/* Simple integer */
 48%token <id>
 IDENTIFIER
-/* Simple identifier
-*/
+/* Simple identifier */
 %token <lbls>
 IF WHILE
-/* For backpatching labels
-*/
+/* For backpatching labels */
 %token SKIP THEN ELSE FI DO END
 %token INTEGER READ WRITE LET IN
 %token ASSGNOP
@@ -96,10 +93,10 @@ OPERATOR PRECEDENCE
 %%
 program : LET
 declarations
-IN { gen_code( DATA, data_location() - 1 ); }
-commands
-END { gen_code( HALT, 0 ); YYACCEPT; }
-;
+  IN { gen_code( ST, data_location() - 1, 0, 0 ); }
+    commands
+  END { gen_code( HALT, 0, 0, 0 ); YYACCEPT; }
+  ;
 declarations
   : /* empty */
   | INTEGER id_seq IDENTIFIER '.' { install( $3 ); }
@@ -111,37 +108,38 @@ commands: /* empty */
   | commands command ';'
   ;
 command: SKIP
-  | READ IDENTIFIER { context_check( READ_INT, $2 ); }
-  | WRITE exp {   ( WRITE_INT, 0 ); }               
-  | IDENTIFIER ASSGNOP exp { context_check( STORE, $1 ); }
+  | READ IDENTIFIER { context_check( IN_OP, $2 ); }
+  | WRITE exp { gen_code( OUT, 0 ,0,0); }               
+  | IDENTIFIER ASSGNOP exp { context_check( ST, $1); }
   | IF exp { $1 = (struct lbs *) newlblrec();
             $1->for_jmp_false = reserve_loc();}
     THEN commands { $1->for_goto = reserve_loc();}
-    ELSE { back_patch( $1->for_jmp_false, JMP_FALSE, gen_label() ); }
+    ELSE { back_patch( $1->for_jmp_false, JNE, gen_label(), 0, 0 ); }
       commands
-    FI { back_patch( $1->for_goto, GOTO, gen_label() ); }
+    FI { back_patch( $1->for_goto, JEQ, gen_label() ,0,0); }
   | WHILE { $1 = (struct lbs *) newlblrec(); $1->for_goto = gen_label(); }
       exp { $1->for_jmp_false = reserve_loc(); }
     DO
       commands
-    END   { gen_code( GOTO, $1->for_goto );
+    END   { gen_code( JEQ, $1->for_goto,0,0 );
             back_patch( $1->for_jmp_false,
-                        JMP_FALSE,
-                        gen_label() ); }
+                        JNE,
+                        gen_label(), 0, 0 ); }
   ;
 exp
-  : NUMBER { gen_code( LD_INT, $1 ); }
-  | IDENTIFIER { context_check( LD_VAR, $1 ); }
-  | exp '<' exp { gen_code( LT, 0 ); }
-  | exp '=' exp { gen_code( EQ, 0 ); }
-  | exp '>' exp { gen_code( GT, 0 ); }
-  | exp '+' exp { gen_code( ADD, 0 ); }
-  | exp '-' exp { gen_code( SUB, 0 ); }
-  | exp '*' exp { gen_code( MULT, 0 ); }
-  | exp '/' exp { gen_code( DIV, 0 ); }
+  : NUMBER { gen_code( LDC, $1,0,0); }
+  | IDENTIFIER { context_check( LD, $1 ); }   
+  | exp '<' exp { pop_stack(); }
+  | exp '=' exp { pop_stack(); }
+  | exp '>' exp { pop_stack(); }
+  | exp '+' exp { pop_stack(); }
+  | exp '-' exp { pop_stack(); }
+  | exp '*' exp { pop_stack(); }
+  | exp '/' exp { pop_stack(); }
   | '(' exp ')'
   ;
 %%
+
 
 main( int argc, char *argv[] )
 { 
