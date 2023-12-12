@@ -128,14 +128,14 @@ command: SKIP
   ;
 exp
   : NUMBER { gen_code( LDC, $1,0,0); }
-  | IDENTIFIER { context_check( LD, $1 ); }   
+  | IDENTIFIER { context_check( LD, $1 ); }
   | exp '<' exp { pop_stack(); }
   | exp '=' exp { pop_stack(); }
   | exp '>' exp { pop_stack(); }
-  | exp '+' exp { pop_stack(); }
-  | exp '-' exp { pop_stack(); }
-  | exp '*' exp { pop_stack(); }
-  | exp '/' exp { pop_stack(); }
+  | exp '+' exp { operate(ADD); }
+  | exp '-' exp { operate(SUB); }
+  | exp '*' exp { operate(MUL); }
+  | exp '/' exp { operate(DIV); }
   | '(' exp ')'
   ;
 %%

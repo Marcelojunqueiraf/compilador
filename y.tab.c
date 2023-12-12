@@ -1555,25 +1555,25 @@ yyreduce:
 
   case 26:
 #line 135 "Simple.y"
-                { pop_stack(); }
+                { operate(ADD); }
 #line 1560 "y.tab.c"
     break;
 
   case 27:
 #line 136 "Simple.y"
-                { pop_stack(); }
+                { operate(SUB); }
 #line 1566 "y.tab.c"
     break;
 
   case 28:
 #line 137 "Simple.y"
-                { pop_stack(); }
+                { operate(MUL); }
 #line 1572 "y.tab.c"
     break;
 
   case 29:
 #line 138 "Simple.y"
-                { pop_stack(); }
+                { operate(DIV); }
 #line 1578 "y.tab.c"
     break;
 
