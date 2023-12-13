@@ -1,0 +1,10 @@
+let
+    integer x, y.
+in
+    x := 2+3;
+    write x = 5;
+    y := 3+x;
+    write y = 8;
+    write x + 1 = 6;
+    write x + y = 13;
+end

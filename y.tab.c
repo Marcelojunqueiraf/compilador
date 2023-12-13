@@ -603,9 +603,9 @@ static const yytype_int8 yytranslate[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    94,    94,    94,   101,   102,   104,   105,   107,   108,
-     110,   111,   112,   115,   119,   121,   122,   119,   125,   126,
-     125,   135,   139,   145,   154,   163,   172,   173,   174,   175,
-     176
+     110,   111,   112,   115,   121,   123,   124,   121,   127,   128,
+     127,   137,   141,   147,   156,   165,   174,   175,   176,   177,
+     178
 };
 #endif
 
@@ -1467,89 +1467,91 @@ yyreduce:
 
   case 12:
 #line 112 "Simple.y"
-              { 
+              {
     pop_stack();
-    gen_code( OUT, t1,0, 0); }
+    gen_code(OUT, t1, 0, 0); }
 #line 1474 "y.tab.c"
     break;
 
   case 13:
 #line 115 "Simple.y"
-                           { 
-      context_check( (yyvsp[-2].id)); 
-    
+                           {
+      int address = context_check((yyvsp[-2].id));
+      pop_stack();
+      gen_code(LDC, t2, address, 0);
+      gen_code(ST, t1, 0, t2);
     }
-#line 1483 "y.tab.c"
+#line 1485 "y.tab.c"
     break;
 
   case 14:
-#line 119 "Simple.y"
+#line 121 "Simple.y"
            { (yyvsp[-1].lbls) = (struct lbs *) newlblrec();
             (yyvsp[-1].lbls)->for_jmp_false = reserve_loc();}
-#line 1490 "y.tab.c"
+#line 1492 "y.tab.c"
     break;
 
   case 15:
-#line 121 "Simple.y"
+#line 123 "Simple.y"
                   { (yyvsp[-4].lbls)->for_goto = reserve_loc();}
-#line 1496 "y.tab.c"
+#line 1498 "y.tab.c"
     break;
 
   case 16:
-#line 122 "Simple.y"
-         { back_patch( (yyvsp[-6].lbls)->for_jmp_false, JNE, gen_label(), 0, 0 ); }
-#line 1502 "y.tab.c"
+#line 124 "Simple.y"
+         { back_patch( (yyvsp[-6].lbls)->for_jmp_false, JEQ, gen_label(), 0, 0 ); }
+#line 1504 "y.tab.c"
     break;
 
   case 17:
-#line 124 "Simple.y"
-       { back_patch( (yyvsp[-9].lbls)->for_goto, JEQ, gen_label() ,0,0); }
-#line 1508 "y.tab.c"
+#line 126 "Simple.y"
+       { back_patch( (yyvsp[-9].lbls)->for_goto, JNE, gen_label() ,0,0); }
+#line 1510 "y.tab.c"
     break;
 
   case 18:
-#line 125 "Simple.y"
+#line 127 "Simple.y"
           { (yyvsp[0].lbls) = (struct lbs *) newlblrec(); (yyvsp[0].lbls)->for_goto = gen_label(); }
-#line 1514 "y.tab.c"
+#line 1516 "y.tab.c"
     break;
 
   case 19:
-#line 126 "Simple.y"
+#line 128 "Simple.y"
           { (yyvsp[-2].lbls)->for_jmp_false = reserve_loc(); }
-#line 1520 "y.tab.c"
+#line 1522 "y.tab.c"
     break;
 
   case 20:
-#line 129 "Simple.y"
+#line 131 "Simple.y"
           { gen_code( JEQ, (yyvsp[-6].lbls)->for_goto,0,0 );
             back_patch( (yyvsp[-6].lbls)->for_jmp_false,
                         JNE,
                         gen_label(), 0, 0 ); }
-#line 1529 "y.tab.c"
+#line 1531 "y.tab.c"
     break;
 
   case 21:
-#line 135 "Simple.y"
+#line 137 "Simple.y"
            {
     gen_code( LDC, t1, (yyvsp[0].intval), 0);
     push_stack();
   }
-#line 1538 "y.tab.c"
+#line 1540 "y.tab.c"
     break;
 
   case 22:
-#line 139 "Simple.y"
+#line 141 "Simple.y"
                { 
     int address = context_check( (yyvsp[0].id) );
     gen_code(LDC, t1, address, 0);
     gen_code(LD, t1, 0, t1);
     push_stack();
-    }
-#line 1549 "y.tab.c"
+  }
+#line 1551 "y.tab.c"
     break;
 
   case 23:
-#line 145 "Simple.y"
+#line 147 "Simple.y"
                 { 
     operate(SUB);
     pop_stack();
@@ -1559,11 +1561,11 @@ yyreduce:
     gen_code(LDC, t1, 1, 0); // t1 = 1
     push_stack();
   }
-#line 1563 "y.tab.c"
+#line 1565 "y.tab.c"
     break;
 
   case 24:
-#line 154 "Simple.y"
+#line 156 "Simple.y"
                 {
     operate(SUB);
     pop_stack();
@@ -1573,11 +1575,11 @@ yyreduce:
     gen_code(LDC, t1, 1, 0); // t1 = 1
     push_stack();
   }
-#line 1577 "y.tab.c"
+#line 1579 "y.tab.c"
     break;
 
   case 25:
-#line 163 "Simple.y"
+#line 165 "Simple.y"
                 { 
     operate(SUB);
     pop_stack();
@@ -1587,35 +1589,35 @@ yyreduce:
     gen_code(LDC, t1, 1, 0); // t1 = 1
     push_stack();
   }
-#line 1591 "y.tab.c"
+#line 1593 "y.tab.c"
     break;
 
   case 26:
-#line 172 "Simple.y"
+#line 174 "Simple.y"
                 { operate(ADD); }
-#line 1597 "y.tab.c"
+#line 1599 "y.tab.c"
     break;
 
   case 27:
-#line 173 "Simple.y"
+#line 175 "Simple.y"
                 { operate(SUB); }
-#line 1603 "y.tab.c"
+#line 1605 "y.tab.c"
     break;
 
   case 28:
-#line 174 "Simple.y"
+#line 176 "Simple.y"
                 { operate(MUL); }
-#line 1609 "y.tab.c"
+#line 1611 "y.tab.c"
     break;
 
   case 29:
-#line 175 "Simple.y"
+#line 177 "Simple.y"
                 { operate(DIV); }
-#line 1615 "y.tab.c"
+#line 1617 "y.tab.c"
     break;
 
 
-#line 1619 "y.tab.c"
+#line 1621 "y.tab.c"
 
       default: break;
     }
@@ -1847,7 +1849,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 178 "Simple.y"
+#line 180 "Simple.y"
 
 
 

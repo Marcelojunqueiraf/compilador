@@ -92,7 +92,7 @@ OPERATOR PRECEDENCE
 
 %%
 program : LET { initializeProgram(); }
-declarations
+    declarations
   IN 
     commands
   END { gen_code( HALT, 0, 0, 0 ); YYACCEPT; }
@@ -109,19 +109,21 @@ commands: /* empty */
   ;
 command: SKIP
   | READ IDENTIFIER { context_check( $2 ); }
-  | WRITE exp { 
+  | WRITE exp {
     pop_stack();
-    gen_code( OUT, t1,0, 0); }               
-  | IDENTIFIER ASSGNOP exp { 
-      context_check( $1); 
-    
+    gen_code(OUT, t1, 0, 0); }
+  | IDENTIFIER ASSGNOP exp {
+      int address = context_check($1);
+      pop_stack();
+      gen_code(LDC, t2, address, 0);
+      gen_code(ST, t1, 0, t2);
     }
   | IF exp { $1 = (struct lbs *) newlblrec();
             $1->for_jmp_false = reserve_loc();}
     THEN commands { $1->for_goto = reserve_loc();}
-    ELSE { back_patch( $1->for_jmp_false, JNE, gen_label(), 0, 0 ); }
+    ELSE { back_patch( $1->for_jmp_false, JEQ, gen_label(), 0, 0 ); }
       commands
-    FI { back_patch( $1->for_goto, JEQ, gen_label() ,0,0); }
+    FI { back_patch( $1->for_goto, JNE, gen_label() ,0,0); }
   | WHILE { $1 = (struct lbs *) newlblrec(); $1->for_goto = gen_label(); }
       exp { $1->for_jmp_false = reserve_loc(); }
     DO
@@ -141,7 +143,7 @@ exp
     gen_code(LDC, t1, address, 0);
     gen_code(LD, t1, 0, t1);
     push_stack();
-    }
+  }
   | exp '<' exp { 
     operate(SUB);
     pop_stack();
