@@ -49,41 +49,41 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUMBER = 48,
-    IDENTIFIER = 258,
-    IF = 259,
-    WHILE = 260,
-    SKIP = 261,
-    THEN = 262,
-    ELSE = 263,
-    FI = 264,
-    DO = 265,
-    END = 266,
-    INTEGER = 267,
-    READ = 268,
-    WRITE = 269,
-    LET = 270,
-    IN = 271,
-    ASSGNOP = 272
+    NUMBER = 258,
+    IDENTIFIER = 259,
+    IF = 260,
+    WHILE = 261,
+    SKIP = 262,
+    THEN = 263,
+    ELSE = 264,
+    FI = 265,
+    DO = 266,
+    END = 267,
+    INTEGER = 268,
+    READ = 269,
+    WRITE = 270,
+    LET = 271,
+    IN = 272,
+    ASSGNOP = 273
   };
 #endif
 /* Tokens.  */
-#define NUMBER 48
-#define IDENTIFIER 258
-#define IF 259
-#define WHILE 260
-#define SKIP 261
-#define THEN 262
-#define ELSE 263
-#define FI 264
-#define DO 265
-#define END 266
-#define INTEGER 267
-#define READ 268
-#define WRITE 269
-#define LET 270
-#define IN 271
-#define ASSGNOP 272
+#define NUMBER 258
+#define IDENTIFIER 259
+#define IF 260
+#define WHILE 261
+#define SKIP 262
+#define THEN 263
+#define ELSE 264
+#define FI 265
+#define DO 266
+#define END 267
+#define INTEGER 268
+#define READ 269
+#define WRITE 270
+#define LET 271
+#define IN 272
+#define ASSGNOP 273
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

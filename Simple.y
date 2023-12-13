@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ST.h"
-#include "SM.h"
 #include "CG.h"
 #define YYDEBUG 1
 int errors;
@@ -36,7 +35,7 @@ void install ( char *sym_name )
 /*-------------------------------------------------------------------------
 If identifier is defined, generate code
 -------------------------------------------------------------------------*/
-context_check( enum code_ops operation, char *sym_name )
+int context_check( char *sym_name )
 {
   symrec *identifier;
   identifier = getsym( sym_name );
@@ -46,7 +45,8 @@ context_check( enum code_ops operation, char *sym_name )
     printf( "%s", sym_name );
     printf( "%s\n", " is an undeclared identifier" );
   }
-  else gen_code( operation, identifier->offset ,0,0);
+  else
+    return identifier->offset;
 }
 /*=========================================================================
 SEMANTIC RECORDS
@@ -74,7 +74,7 @@ TOKENS
 %start program
 %token <intval> NUMBER
 /* Simple integer */
-48%token <id>
+%token <id>
 IDENTIFIER
 /* Simple identifier */
 %token <lbls>
@@ -91,9 +91,9 @@ OPERATOR PRECEDENCE
 
 
 %%
-program : LET
+program : LET { initializeProgram(); }
 declarations
-  IN { gen_code( ST, data_location() - 1, 0, 0 ); }
+  IN 
     commands
   END { gen_code( HALT, 0, 0, 0 ); YYACCEPT; }
   ;
@@ -108,9 +108,14 @@ commands: /* empty */
   | commands command ';'
   ;
 command: SKIP
-  | READ IDENTIFIER { context_check( IN_OP, $2 ); }
-  | WRITE exp { gen_code( OUT, 0 ,0,0); }               
-  | IDENTIFIER ASSGNOP exp { context_check( ST, $1); }
+  | READ IDENTIFIER { context_check( $2 ); }
+  | WRITE exp { 
+    pop_stack();
+    gen_code( OUT, t1,0, 0); }               
+  | IDENTIFIER ASSGNOP exp { 
+      context_check( $1); 
+    
+    }
   | IF exp { $1 = (struct lbs *) newlblrec();
             $1->for_jmp_false = reserve_loc();}
     THEN commands { $1->for_goto = reserve_loc();}
@@ -127,11 +132,43 @@ command: SKIP
                         gen_label(), 0, 0 ); }
   ;
 exp
-  : NUMBER { gen_code( LDC, $1,0,0); }
-  | IDENTIFIER { context_check( LD, $1 ); }
-  | exp '<' exp { pop_stack(); }
-  | exp '=' exp { pop_stack(); }
-  | exp '>' exp { pop_stack(); }
+  : NUMBER {
+    gen_code( LDC, t1, $1, 0);
+    push_stack();
+  }
+  | IDENTIFIER { 
+    int address = context_check( $1 );
+    gen_code(LDC, t1, address, 0);
+    gen_code(LD, t1, 0, t1);
+    push_stack();
+    }
+  | exp '<' exp { 
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JGE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
+  | exp '=' exp {
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JNE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
+  | exp '>' exp { 
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JLE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
   | exp '+' exp { operate(ADD); }
   | exp '-' exp { operate(SUB); }
   | exp '*' exp { operate(MUL); }
@@ -150,7 +187,6 @@ main( int argc, char *argv[] )
   // yydebug = 1;
   errors = 0;
   yyparse ();
-  printf ( "Parse Completed\n" );
   if (errors == 0)
   { 
     print_code ();

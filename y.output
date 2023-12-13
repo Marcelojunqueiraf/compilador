@@ -13,7 +13,7 @@ Grammar
 
     1 $@1: %empty
 
-    2 program: LET declarations IN $@1 commands END
+    2 program: LET $@1 declarations IN commands END
 
     3 declarations: %empty
     4             | INTEGER id_seq IDENTIFIER '.'
@@ -66,27 +66,27 @@ Terminals, with rules where they appear
     '-' (45) 26
     '.' (46) 4
     '/' (47) 28
-    NUMBER <intval> (48) 20
     ';' (59) 8
     '<' (60) 22
     '=' (61) 23
     '>' (62) 24
     error (256)
-    IDENTIFIER <id> (258) 4 6 10 12 21
-    IF <lbls> (259) 16
-    WHILE <lbls> (260) 19
-    SKIP (261) 9
-    THEN (262) 16
-    ELSE (263) 16
-    FI (264) 16
-    DO (265) 19
-    END (266) 2 19
-    INTEGER (267) 4
-    READ (268) 10
-    WRITE (269) 11
-    LET (270) 2
-    IN (271) 2
-    ASSGNOP (272) 12
+    NUMBER <intval> (258) 20
+    IDENTIFIER <id> (259) 4 6 10 12 21
+    IF <lbls> (260) 16
+    WHILE <lbls> (261) 19
+    SKIP (262) 9
+    THEN (263) 16
+    ELSE (264) 16
+    FI (265) 16
+    DO (266) 19
+    END (267) 2 19
+    INTEGER (268) 4
+    READ (269) 10
+    WRITE (270) 11
+    LET (271) 2
+    IN (272) 2
+    ASSGNOP (273) 12
 
 
 Nonterminals, with rules where they appear
@@ -142,97 +142,83 @@ State 0
 
 State 1
 
-    2 program: LET . declarations IN $@1 commands END
+    2 program: LET . $@1 declarations IN commands END
 
-    INTEGER  shift, and go to state 3
+    $default  reduce using rule 1 ($@1)
 
-    $default  reduce using rule 3 (declarations)
-
-    declarations  go to state 4
+    $@1  go to state 3
 
 
 State 2
 
     0 $accept: program . $end
 
-    $end  shift, and go to state 5
+    $end  shift, and go to state 4
 
 
 State 3
 
-    4 declarations: INTEGER . id_seq IDENTIFIER '.'
+    2 program: LET $@1 . declarations IN commands END
 
-    $default  reduce using rule 5 (id_seq)
+    INTEGER  shift, and go to state 5
 
-    id_seq  go to state 6
+    $default  reduce using rule 3 (declarations)
+
+    declarations  go to state 6
 
 
 State 4
-
-    2 program: LET declarations . IN $@1 commands END
-
-    IN  shift, and go to state 7
-
-
-State 5
 
     0 $accept: program $end .
 
     $default  accept
 
 
+State 5
+
+    4 declarations: INTEGER . id_seq IDENTIFIER '.'
+
+    $default  reduce using rule 5 (id_seq)
+
+    id_seq  go to state 7
+
+
 State 6
 
-    4 declarations: INTEGER id_seq . IDENTIFIER '.'
-    6 id_seq: id_seq . IDENTIFIER ','
+    2 program: LET $@1 declarations . IN commands END
 
-    IDENTIFIER  shift, and go to state 8
+    IN  shift, and go to state 8
 
 
 State 7
 
-    2 program: LET declarations IN . $@1 commands END
+    4 declarations: INTEGER id_seq . IDENTIFIER '.'
+    6 id_seq: id_seq . IDENTIFIER ','
 
-    $default  reduce using rule 1 ($@1)
-
-    $@1  go to state 9
+    IDENTIFIER  shift, and go to state 9
 
 
 State 8
 
-    4 declarations: INTEGER id_seq IDENTIFIER . '.'
-    6 id_seq: id_seq IDENTIFIER . ','
+    2 program: LET $@1 declarations IN . commands END
 
-    '.'  shift, and go to state 10
-    ','  shift, and go to state 11
+    $default  reduce using rule 7 (commands)
+
+    commands  go to state 10
 
 
 State 9
 
-    2 program: LET declarations IN $@1 . commands END
+    4 declarations: INTEGER id_seq IDENTIFIER . '.'
+    6 id_seq: id_seq IDENTIFIER . ','
 
-    $default  reduce using rule 7 (commands)
-
-    commands  go to state 12
+    '.'  shift, and go to state 11
+    ','  shift, and go to state 12
 
 
 State 10
 
-    4 declarations: INTEGER id_seq IDENTIFIER '.' .
-
-    $default  reduce using rule 4 (declarations)
-
-
-State 11
-
-    6 id_seq: id_seq IDENTIFIER ',' .
-
-    $default  reduce using rule 6 (id_seq)
-
-
-State 12
-
-    2 program: LET declarations IN $@1 commands . END
+    2 program: LET $@1 declarations IN commands . END
     8 commands: commands . command ';'
 
     IDENTIFIER  shift, and go to state 13
@@ -244,6 +230,20 @@ State 12
     WRITE       shift, and go to state 19
 
     command  go to state 20
+
+
+State 11
+
+    4 declarations: INTEGER id_seq IDENTIFIER '.' .
+
+    $default  reduce using rule 4 (declarations)
+
+
+State 12
+
+    6 id_seq: id_seq IDENTIFIER ',' .
+
+    $default  reduce using rule 6 (id_seq)
 
 
 State 13
@@ -282,7 +282,7 @@ State 16
 
 State 17
 
-    2 program: LET declarations IN $@1 commands END .
+    2 program: LET $@1 declarations IN commands END .
 
     $default  reduce using rule 2 (program)
 

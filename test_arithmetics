@@ -1,0 +1,17 @@
+let
+in
+    write 12 + 5;
+    write 12 - 5;
+    write 12 / 5;
+    write 4 * 3;
+    write 1 < 2;
+    write 3 < 2;
+    write 4 > 1;
+    write 4 > 5;
+    write 69;
+    write 4 = 5;
+    write 4 + 5 * 3;
+    write 4 + (5-3);
+    write 6 < (2*4);
+    write 6 < 2 * 4;
+end
