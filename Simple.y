@@ -125,15 +125,6 @@ command: PAUSE { gen_code( HALT, 0, 0, 0);}
       gen_code(LDC, t2, address, 0);
       gen_code(ST, t1, 0, t2);
     }
-/*
-{exp da condicional}
-JEQ else
-{commands do then}
-goto fi
-else:
-{commands do else}
-fi:
-*/
   | IF exp {
       $1 = (struct lbs *) newlblrec();
       pop_stack(); // valor de exp em t1
@@ -169,7 +160,38 @@ fi:
       back_patch( $1->for_jmp_false, JEQ, t1, gen_label(), t2);
     }
   ;
-exp
+exp:
+  | subexp '<' subexp { 
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JGE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
+  | subexp '=' subexp {
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JNE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
+  | subexp '>' subexp { 
+    operate(SUB);
+    pop_stack();
+    copy(t1, t2);
+    gen_code(LDC, t1, 0, 0); // t1 = 0
+    gen_code(JLE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
+    gen_code(LDC, t1, 1, 0); // t1 = 1
+    push_stack();
+  }
+  | '(' exp ')'
+  | subexp
+  ;
+subexp
   :NUMBER {
     gen_code( LDC, t1, $1, 0);
     push_stack();
@@ -180,38 +202,11 @@ exp
     gen_code(LD, t1, 0, t1);
     push_stack();
   }
-  | exp '<' exp { 
-    operate(SUB);
-    pop_stack();
-    copy(t1, t2);
-    gen_code(LDC, t1, 0, 0); // t1 = 0
-    gen_code(JGE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
-    gen_code(LDC, t1, 1, 0); // t1 = 1
-    push_stack();
-  }
-  | exp '=' exp {
-    operate(SUB);
-    pop_stack();
-    copy(t1, t2);
-    gen_code(LDC, t1, 0, 0); // t1 = 0
-    gen_code(JNE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
-    gen_code(LDC, t1, 1, 0); // t1 = 1
-    push_stack();
-  }
-  | exp '>' exp { 
-    operate(SUB);
-    pop_stack();
-    copy(t1, t2);
-    gen_code(LDC, t1, 0, 0); // t1 = 0
-    gen_code(JLE, t2, 1, pc); // se t1 for diferente de 0 pular para pc+2
-    gen_code(LDC, t1, 1, 0); // t1 = 1
-    push_stack();
-  }
-  | exp '+' exp { operate(ADD); }
-  | exp '-' exp { operate(SUB); }
-  | exp '*' exp { operate(MUL); }
-  | exp '/' exp { operate(DIV); }
-  | '(' exp ')'
+  | subexp '+' subexp { operate(ADD); }
+  | subexp '-' subexp { operate(SUB); }
+  | subexp '*' subexp { operate(MUL); }
+  | subexp '/' subexp { operate(DIV); }
+  | '(' subexp ')'
   ;
 %%
 
@@ -237,3 +232,4 @@ int yyerror ( char *s ) /* Called by yyparse on error */
   errors++;
   printf ("%s\n", s);
 }
+
