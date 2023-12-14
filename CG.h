@@ -132,14 +132,18 @@ void initializeProgram()
 // LDA => reg[r] = d+reg[s]
 void pop_stack()
 {
-  gen_code(LD, t1, 0, sp);  // poe o valor do topo da pilha em t1
+  gen_code(LD, t1, 0, sp); // poe o valor do topo da pilha em t1
+  // gen_code(OUT, sp, 0, 0);
   gen_code(LDA, sp, 1, sp); // incrementa sp em 1
+  // gen_code(OUT, sp, 0, 0);
 }
 
 void push_stack()
 {
+  // gen_code(OUT, sp, 0, 0);
   gen_code(LDA, sp, -1, sp); // decrementa sp em 1
-  gen_code(ST, t1, 0, sp);   // Bota o valor de t1 no topo da pilha
+  // gen_code(OUT, sp, 0, 0);
+  gen_code(ST, t1, 0, sp); // Bota o valor de t1 no topo da pilha
 }
 
 void copy(enum Regs from, enum Regs to)

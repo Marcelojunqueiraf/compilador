@@ -64,7 +64,8 @@ extern int yydebug;
     WRITE = 270,
     LET = 271,
     IN = 272,
-    ASSGNOP = 273
+    ASSGNOP = 273,
+    PAUSE = 274
   };
 #endif
 /* Tokens.  */
@@ -84,6 +85,7 @@ extern int yydebug;
 #define LET 271
 #define IN 272
 #define ASSGNOP 273
+#define PAUSE 274
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -104,7 +106,7 @@ struct lbs *lbls;
 /* For backpatching
 */
 
-#line 108 "y.tab.h"
+#line 110 "y.tab.h"
 
 };
 #line 55 "Simple.y"

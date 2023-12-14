@@ -22,6 +22,7 @@ skip { return(SKIP); }
 then { return(THEN); }
 while { return(WHILE); }
 write { return(WRITE); }
+pause { return(PAUSE); }
 {ID} {
   yylval.id = (char *) strdup(yytext);
   return(IDENTIFIER);

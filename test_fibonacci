@@ -1,0 +1,31 @@
+let
+    integer a1, a2, n, t1.
+in
+    while 0 = 0 do
+
+        a1 := 1;
+        a2 := 1;
+
+        read n;
+        
+        write a1;
+        
+        if n > 1
+        then
+          write a2;
+        else
+          skip;
+        fi;
+
+        while n > 2 do
+            t1 := a2;
+            a2 := a1 + a2;
+            a1 := t1;
+            write a2;
+
+            n := n - 1;
+        end;
+        
+    end;
+
+end

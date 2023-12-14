@@ -1,10 +1,11 @@
 let
-    integer x, y.
+    integer x.
 in
-    x := 2+3;
-    write x = 5;
-    y := 3+x;
-    write y = 8;
-    write x + 1 = 6;
-    write x + y = 13;
+
+    while 0 < 1 do
+        skip;
+    end;
+
+
+
 end

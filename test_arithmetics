@@ -1,7 +1,0 @@
-let
-    integer x, y.
-in
-    x := 2;
-    y := x + 1 < 6;
-    write y;
-end

@@ -1,0 +1,15 @@
+let
+    integer n, acc.
+in
+    while 0 = 0 do
+        read n;
+        acc := 1;
+        while n > 0 do
+            acc := acc * n;
+            n := n - 1;
+        end;
+
+        write acc;
+    end;
+
+end

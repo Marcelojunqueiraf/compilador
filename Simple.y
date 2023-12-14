@@ -83,6 +83,7 @@ IF WHILE
 %token SKIP THEN ELSE FI DO END
 %token INTEGER READ WRITE LET IN
 %token ASSGNOP
+%token PAUSE
 /*=========================================================================
 OPERATOR PRECEDENCE
 =========================================================================*/
@@ -95,7 +96,7 @@ program : LET { initializeProgram(); }
     declarations
   IN 
     commands
-  END { gen_code( HALT, 0, 0, 0 ); YYACCEPT; }
+  END { YYACCEPT; }
   ;
 declarations
   : /* empty */
@@ -107,8 +108,14 @@ id_seq: /* empty */
 commands: /* empty */
   | commands command ';'
   ;
-command: SKIP
-  | READ IDENTIFIER { context_check( $2 ); }
+command: PAUSE { gen_code( HALT, 0, 0, 0);} 
+  | SKIP { copy(t1, t1);}
+  | READ IDENTIFIER {
+    gen_code(IN_OP, t1, 0, 0);
+    int address = context_check( $2 );
+    gen_code(LDC, t2, address, 0);
+    gen_code(ST, t1, 0, t2); 
+  }
   | WRITE exp {
     pop_stack();
     gen_code(OUT, t1, 0, 0); }
@@ -118,23 +125,52 @@ command: SKIP
       gen_code(LDC, t2, address, 0);
       gen_code(ST, t1, 0, t2);
     }
-  | IF exp { $1 = (struct lbs *) newlblrec();
-            $1->for_jmp_false = reserve_loc();}
-    THEN commands { $1->for_goto = reserve_loc();}
-    ELSE { back_patch( $1->for_jmp_false, JEQ, gen_label(), 0, 0 ); }
+/*
+{exp da condicional}
+JEQ else
+{commands do then}
+goto fi
+else:
+{commands do else}
+fi:
+*/
+  | IF exp {
+      $1 = (struct lbs *) newlblrec();
+      pop_stack(); // valor de exp em t1
+      gen_code(LDC, t2, 0, 0); // t2 = 0
+      $1->for_jmp_false = reserve_loc(); // reserva espaço para o JEQ para o else
+    }
+    THEN commands {
+      gen_code(LDC, t1, 0, 0); // t1 = 0
+      $1->for_goto = reserve_loc();
+    }
+    ELSE {
+      back_patch( $1->for_jmp_false, JEQ, t1, gen_label(), t2 );
+    }
       commands
-    FI { back_patch( $1->for_goto, JNE, gen_label() ,0,0); }
-  | WHILE { $1 = (struct lbs *) newlblrec(); $1->for_goto = gen_label(); }
-      exp { $1->for_jmp_false = reserve_loc(); }
+    FI { // label fi
+      back_patch( $1->for_goto, JEQ, t1, gen_label(), t1);
+    }
+  | WHILE {
+      $1 = (struct lbs *) newlblrec();
+      $1->for_goto = gen_label(); // onde vai ficar o jump
+    }
+      exp {
+        pop_stack(); // t1 = valor da expressão
+        gen_code(LDC, t2, 0, 0); // t2 = 0
+        $1->for_jmp_false = reserve_loc();
+      }
     DO
       commands
-    END   { gen_code( JEQ, $1->for_goto,0,0 );
-            back_patch( $1->for_jmp_false,
-                        JNE,
-                        gen_label(), 0, 0 ); }
+    END {
+      gen_code(LDC, t1, 0, 0); // t1 = 0
+      gen_code( JEQ, t1, $1->for_goto, t1); // GOTO começo do while
+
+      back_patch( $1->for_jmp_false, JEQ, t1, gen_label(), t2);
+    }
   ;
 exp
-  : NUMBER {
+  :NUMBER {
     gen_code( LDC, t1, $1, 0);
     push_stack();
   }
@@ -180,7 +216,7 @@ exp
 %%
 
 
-main( int argc, char *argv[] )
+int main( int argc, char *argv[] )
 { 
   extern FILE *yyin;
   ++argv;
@@ -196,7 +232,7 @@ main( int argc, char *argv[] )
   }
 }
 
-yyerror ( char *s ) /* Called by yyparse on error */
+int yyerror ( char *s ) /* Called by yyparse on error */
 {
   errors++;
   printf ("%s\n", s);
