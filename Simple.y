@@ -89,7 +89,7 @@ OPERATOR PRECEDENCE
 =========================================================================*/
 %left '-' '+'
 %left '*' '/'
-
+%left UMINUS
 
 %%
 program : LET { initializeProgram(); }
@@ -207,6 +207,11 @@ subexp
   | subexp '*' subexp { operate(MUL); }
   | subexp '/' subexp { operate(DIV); }
   | '(' subexp ')'
+  | '-' subexp %prec UMINUS {
+    gen_code(LDC, t1,-1,0);
+    push_stack();
+    operate(MUL);
+  }
   ;
 %%
 
